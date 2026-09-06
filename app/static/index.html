@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Encurtador de links</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EDEEE9;
+    --card: #FBFBF8;
+    --ink: #1B1F1D;
+    --muted: #6B6A62;
+    --line: #C7C2B4;
+    --accent: #B9791A;
+    --accent-dark: #8F5E10;
+    --error: #A8402C;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .page{
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .mark{
+    font-family: "Fraunces", serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0 0 6px 2px;
+  }
+
+  h1{
+    font-family: "Fraunces", serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: 30px;
+    line-height: 1.25;
+    margin: 0 0 28px 2px;
+    max-width: 22ch;
+  }
+
+  .ticket{
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: visible;
+  }
+
+  .ticket__section{
+    padding: 26px 26px 24px;
+  }
+
+  .ticket__divider{
+    position: relative;
+    border-top: 2px dashed var(--line);
+    margin: 0 26px;
+  }
+
+  .ticket__divider::before,
+  .ticket__divider::after{
+    content: "";
+    position: absolute;
+    top: -12px;
+    width: 24px;
+    height: 24px;
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .ticket__divider::before{ left: -38px; }
+  .ticket__divider::after{ right: -38px; }
+
+  label{
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .input-row{
+    display: flex;
+    gap: 8px;
+  }
+
+  input[type="url"]{
+    flex: 1;
+    min-width: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    padding: 12px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+  }
+
+  input[type="url"]:focus{
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  button{
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    padding: 12px 18px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  button:hover{ background: var(--accent-dark); }
+  button:disabled{ background: var(--line); cursor: default; }
+
+  button:focus-visible, a:focus-visible{
+    outline: 2px solid var(--accent-dark);
+    outline-offset: 2px;
+  }
+
+  .error{
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--error);
+  }
+
+  .result{
+    display: none;
+  }
+
+  .result.is-visible{
+    display: block;
+  }
+
+  .result__label{
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .result__row{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result__code{
+    flex: 1;
+    min-width: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .result__target{
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    word-break: break-all;
+  }
+
+  .copy-btn{
+    background: var(--ink);
+  }
+  .copy-btn:hover{ background: #000; }
+
+  .history{
+    margin-top: 22px;
+    padding: 0 2px;
+  }
+
+  .history__label{
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .history__item{
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+
+  .history__item code{
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 600;
+  }
+
+  .history__item a{
+    color: var(--muted);
+    text-decoration: none;
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .history__item a:hover{
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .result.is-visible{
+      animation: reveal 240ms ease-out;
+    }
+  }
+  @keyframes reveal{
+    from{ opacity: 0; transform: translateY(4px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <p class="mark">Encurtador de links</p>
+  <h1>Um endereço mais curto, sem perder o destino.</h1>
+
+  <div class="ticket">
+    <div class="ticket__section">
+      <form id="shorten-form">
+        <label for="url-input">Link para encurtar</label>
+        <div class="input-row">
+          <input id="url-input" type="url" name="url" placeholder="https://exemplo.com/um/caminho/bem/comprido" required />
+          <button type="submit" id="submit-btn">Encurtar</button>
+        </div>
+        <p class="error" id="error-msg" style="display:none;"></p>
+      </form>
+    </div>
+
+    <div class="ticket__divider"></div>
+
+    <div class="ticket__section result" id="result">
+      <p class="result__label">Seu link curto</p>
+      <div class="result__row">
+        <div class="result__code" id="short-url"></div>
+        <button class="copy-btn" id="copy-btn" type="button">Copiar</button>
+      </div>
+      <p class="result__target">Aponta para: <span id="original-url"></span></p>
+    </div>
+  </div>
+
+  <div class="history" id="history" style="display:none;">
+    <p class="history__label">Encurtados recentemente neste navegador</p>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('shorten-form');
+  const urlInput = document.getElementById('url-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorMsg = document.getElementById('error-msg');
+  const result = document.getElementById('result');
+  const shortUrlEl = document.getElementById('short-url');
+  const originalUrlEl = document.getElementById('original-url');
+  const copyBtn = document.getElementById('copy-btn');
+  const historyWrap = document.getElementById('history');
+  const historyList = document.getElementById('history-list');
+
+  const HISTORY_KEY = 'encurtador:historico';
+
+  function loadHistory(){
+    try{
+      return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    }catch{
+      return [];
+    }
+  }
+
+  function saveToHistory(entry){
+    const items = loadHistory();
+    items.unshift(entry);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 5)));
+    renderHistory();
+  }
+
+  function renderHistory(){
+    const items = loadHistory();
+    if(items.length === 0){
+      historyWrap.style.display = 'none';
+      return;
+    }
+    historyWrap.style.display = 'block';
+    historyList.innerHTML = items.map(item => `
+      <div class="history__item">
+        <code>${item.short_code}</code>
+        <a href="${item.original_url}" target="_blank" rel="noopener">${item.original_url}</a>
+      </div>
+    `).join('');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Encurtando…';
+
+    try{
+      const response = await fetch('/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: urlInput.value })
+      });
+
+      if(!response.ok){
+        throw new Error(response.status === 422
+          ? 'Isso não parece um link válido. Inclua http:// ou https://.'
+          : 'Não foi possível encurtar esse link agora.');
+      }
+
+      const data = await response.json();
+      shortUrlEl.textContent = data.short_url;
+      originalUrlEl.textContent = data.original_url;
+      result.classList.add('is-visible');
+      saveToHistory(data);
+      urlInput.value = '';
+    }catch(err){
+      errorMsg.textContent = err.message;
+      errorMsg.style.display = 'block';
+    }finally{
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Encurtar';
+    }
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(shortUrlEl.textContent);
+    const original = copyBtn.textContent;
+    copyBtn.textContent = 'Copiado';
+    setTimeout(() => { copyBtn.textContent = original; }, 1500);
+  });
+
+  renderHistory();
+</script>
+
+</body>
+</html>
