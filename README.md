@@ -73,9 +73,10 @@ seguir para o próximo passo com esse ambiente já ativo.
 pip install -r requirements.txt
 ```
 
-### 4. Rode a aplicação
+### 4. Rode a aplicação(por enquanto durante testes utilize a primeira linha do comando sempre)
 
 ```bash
+$env:TESTING='true'
 uvicorn app.main:app --reload
 ```
 
