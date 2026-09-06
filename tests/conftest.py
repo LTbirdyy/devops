@@ -34,8 +34,12 @@ def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+    engine.dispose()  # fecha todas as conexões antes de apagar o arquivo (necessário no Windows)
     if os.path.exists("test_ci.db"):
-        os.remove("test_ci.db")
+        try:
+            os.remove("test_ci.db")
+        except PermissionError:
+            pass  # o Windows às vezes ainda segura o arquivo por um instante; não é um erro real
 
 
 @pytest.fixture()
