@@ -30,4 +30,4 @@ jobs:
         env:
           TESTING: "true"
         run: |
-          pytest -v
+          python -m pytest -v
