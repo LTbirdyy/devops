@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 # Encurtador de URLs
 
-Projeto da disciplina de Integração DevOps — Ciência da Computação
+Projeto da disciplina de Integração DevOps — Ciência da Computação 2026_2.
 
 Encurta URLs longas em códigos curtos, com cache em Redis para acelerar os
 redirecionamentos mais acessados e persistência em PostgreSQL.
@@ -13,6 +12,30 @@ redirecionamentos mais acessados e persistência em PostgreSQL.
 - **Cache:** Redis
 - **Front-end:** HTML/CSS/JS simples, servido pelo próprio FastAPI
 - **Testes:** pytest
+
+## Estratégia de ramificação e workflow do time
+
+Usamos **Trunk-Based Development**:
+
+- A branch `main` é a única branch de longa duração e representa sempre o
+  estado estável do projeto.
+- Toda alteração é feita em uma branch curta a partir da `main`, nomeada por
+  tipo de tarefa: `feature/nome-da-tarefa`, `fix/nome-do-bug`,
+  `docs/nome-do-ajuste` ou `feature/nome-do-responsavel`.
+- A `main` é protegida: não é possível dar push direto nela. Toda mudança
+  entra via **Pull Request**, que exige:
+  - Aprovação de pelo menos 1 outro membro do grupo
+  - O pipeline de CI (`build-and-test`) passando
+- Mensagens de commit seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/)
+  (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
+
+### Papéis do grupo
+
+| Membro           | Papel | Responsabilidades |
+|------------------|---|---|
+| Gabriel Fernando | Desenvolvedor | Backend: API, persistência, cache, testes automatizados |
+| Alex Xiwang      | Qualidade | Front-end e validação do fluxo de uso ponta a ponta |
+| Daniel godoi     | Operações/Infraestrutura | Git, CI/CD, documentação técnica |
 
 ## Estrutura do projeto
 
@@ -74,7 +97,7 @@ seguir para o próximo passo com esse ambiente já ativo.
 pip install -r requirements.txt
 ```
 
-### 4. Rode a aplicação(por enquanto durante testes utilize a primeira linha do comando sempre)
+### 4. Rode a aplicação
 
 ```bash
 $env:TESTING='true'
@@ -90,6 +113,37 @@ Sem configurar as variáveis `DATABASE_URL` e `REDIS_URL`, a aplicação usa
 um arquivo SQLite local (`test.db`) no lugar do Postgres, só para facilitar
 testes manuais na sua máquina. Isso é temporário: a partir da A2, o projeto
 vai subir com Postgres e Redis de verdade via `docker-compose`.
+
+### ⚠️ Erro `redis.exceptions.ConnectionError` ao rodar o `uvicorn`
+
+Se você **não tem o Redis instalado/rodando** na sua máquina, a aplicação vai
+quebrar com um erro parecido com:
+
+```
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379.
+```
+
+Isso é esperado — a aplicação está tentando se conectar num Redis de verdade
+que ainda não existe na sua máquina. Enquanto não tivermos o `docker-compose`
+pronto (A2), suba a aplicação assim, usando um Redis "falso" em memória
+(o mesmo usado pelos testes automatizados):
+
+**Windows (PowerShell):**
+```powershell
+$env:TESTING='true'
+uvicorn app.main:app --reload
+```
+
+**Mac/Linux:**
+```bash
+TESTING=true uvicorn app.main:app --reload
+```
+
+> **Atenção:** essa variável só vale para o terminal em que foi definida. Se
+> você fechar o terminal ou abrir uma janela nova, precisa setar de novo antes
+> de rodar o `uvicorn` — senão a aplicação volta a tentar conectar no Redis
+> real e dá o mesmo erro.
+
 
 ## Como rodar os testes automatizados
 
