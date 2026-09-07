@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Encurtador de URLs
 
 Projeto da disciplina de Integração DevOps — Ciência da Computação
