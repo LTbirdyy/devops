@@ -1,4 +1,7 @@
 # Encurtador de URLs
+[![CI](https://github.com/LTbirdyy/devops/actions/workflows/ci.yml/badge.svg)](https://github.com/LTbirdyy/devops/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
+![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-yellow)
 
 Projeto da disciplina de Integração DevOps — Ciência da Computação 2026_2.
 
@@ -104,8 +107,7 @@ $env:TESTING='true'
 uvicorn app.main:app --reload
 ```
 
-Acesse **http://localhost:8000** no navegador — a página do encurtador
-deve aparecer.
+Acesse o endereço fornecido no terminal, ele abrirá uma página no navegador.
 
 ## Sobre o modo de desenvolvimento
 
