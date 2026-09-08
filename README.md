@@ -1,4 +1,7 @@
 # Encurtador de URLs
+[![CI](https://github.com/LTbirdyy/devops/actions/workflows/ci.yml/badge.svg)](https://github.com/LTbirdyy/devops/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
+![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-yellow)
 
 Projeto da disciplina de Integração DevOps — Ciência da Computação 2026_2.
 
