@@ -107,8 +107,7 @@ $env:TESTING='true'
 uvicorn app.main:app --reload
 ```
 
-Acesse **http://localhost:8000** no navegador — a página do encurtador
-deve aparecer.
+Acesse o endereço fornecido no terminal, ele abrirá uma página no navegador.
 
 ## Sobre o modo de desenvolvimento
 
