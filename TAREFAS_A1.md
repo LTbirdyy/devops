@@ -26,21 +26,21 @@ Stack: FastAPI + PostgreSQL + Redis
 ## 📄 Documentação / DevOps — [daniel]
 
 ### Git e branches
-- [ ] Confirmar proteção da branch `main` ativada no GitHub:
-  - [ ] Require pull request before merging
-  - [ ] Require status checks to pass before merging (workflow `build-and-test`)
-  - [ ] Block force pushes
-- [ ] Documentar a estratégia de ramificação usada pelo grupo (ex: Trunk-Based: `main` protegida + `feature/*`)
-- [ ] Garantir que os commits do grupo sigam um padrão (ex: `feat:`, `fix:`, `test:`, `docs:`, `chore:`)
+- [X] Confirmar proteção da branch `main` ativada no GitHub:
+  - [X] Require pull request before merging
+  - [X] Require status checks to pass before merging (workflow `build-and-test`)
+  - [X] Block force pushes
+- [X] Documentar a estratégia de ramificação usada pelo grupo (ex: Trunk-Based: `main` protegida + `feature/*`)
+- [X] Garantir que os commits do grupo sigam um padrão (ex: `feat:`, `fix:`, `test:`, `docs:`, `chore:`)
 
 ### CI
-- [ ] Confirmar que o pipeline roda com sucesso na aba **Actions** do GitHub a cada push/PR
-- [ ] Tirar print do pipeline rodando (evidência pra entrega)
+- [X] Confirmar que o pipeline roda com sucesso na aba **Actions** do GitHub a cada push/PR
+- [X] Tirar print do pipeline rodando (evidência pra entrega)
 
 ### Organização da entrega
-- [ ] Revisar o `README.md` — garantir que alguém de fora do grupo consiga clonar e rodar só seguindo as instruções
-- [ ] Documentar a divisão de papéis do grupo (Dev / Qualidade / Infra), conforme pedido no item 4 do PDF da disciplina
-- [ ] Preparar um resumo curto do que foi entregue, caso o professor peça explicação do processo
+- [X] Revisar o `README.md` — garantir que alguém de fora do grupo consiga clonar e rodar só seguindo as instruções
+- [X] Documentar a divisão de papéis do grupo (Dev / Qualidade / Infra), conforme pedido no item 4 do PDF da disciplina
+- [X] Preparar um resumo curto do que foi entregue, caso o professor peça explicação do processo
 
 ---
 
