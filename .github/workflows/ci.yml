@@ -31,3 +31,69 @@ jobs:
           TESTING: "true"
         run: |
           python -m pytest -v
+
+  # Valida que o Dockerfile builda (não publica nada, só confere)
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Buildar a imagem (sem push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: url-shortener:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Sobe o docker compose de verdade (app + Postgres + Redis) e testa a aplicação.
+  # Assim dá para validar a orquestração sem precisar do Docker na máquina local.
+  compose-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Gerar senha aleatória só para este teste
+        run: echo "POSTGRES_PASSWORD=$(openssl rand -hex 16)" >> "$GITHUB_ENV"
+
+      - name: Subir app + Postgres + Redis
+        run: docker compose up -d --build
+
+      - name: Aguardar a aplicação ficar saudável
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fs http://localhost:8000/health > /dev/null; then
+              echo "Aplicação saudável após ${i} tentativa(s)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "A aplicação não respondeu ao /health a tempo"
+          exit 1
+
+      - name: Smoke test (encurta um link e confere o redirecionamento)
+        run: |
+          RESPONSE=$(curl -fs -X POST http://localhost:8000/shorten \
+            -H "Content-Type: application/json" \
+            -d '{"url": "https://www.example.com/teste-compose"}')
+          echo "Resposta: $RESPONSE"
+          CODE=$(echo "$RESPONSE" | jq -r .short_code)
+          LOCATION=$(curl -s -o /dev/null -w "%{redirect_url}" "http://localhost:8000/$CODE")
+          echo "Redireciona para: $LOCATION"
+          test "$LOCATION" = "https://www.example.com/teste-compose"
+
+      - name: Logs dos containers (só se algo falhou)
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Derrubar o ambiente
+        if: always()
+        run: docker compose down -v

@@ -109,6 +109,33 @@ uvicorn app.main:app --reload
 
 Acesse o endereço fornecido no terminal, ele abrirá uma página no navegador.
 
+## Rodando com Docker (Postgres + Redis de verdade)
+
+Pré-requisito: Docker Desktop instalado e aberto.
+
+```powershell
+copy .env.example .env      # Mac/Linux: cp .env.example .env
+# edite o .env e troque POSTGRES_PASSWORD
+docker compose up --build
+```
+
+Acesse **http://localhost:8000**. Com isso o app usa Postgres e Redis reais,
+então **não é mais necessário** definir `TESTING=true`.
+
+Para parar: `Ctrl+C` e depois `docker compose down` (use `down -v` para apagar
+também os dados do banco).
+
+## Pipeline de CI/CD
+
+- **CI** (`.github/workflows/ci.yml`): a cada push/PR roda os testes e valida que o
+  Dockerfile builda.
+- **CD** (`.github/workflows/cd.yml`): ao criar uma tag `vX.Y.Z`, builda a imagem,
+  publica no GitHub Container Registry (GHCR) com tags semânticas, cria a Release
+  e faz o deploy simulado em homologação com smoke test.
+- **Segredos:** a senha do banco fica em *Settings → Environments → homologacao →
+  Secrets* (`POSTGRES_PASSWORD`). Nenhuma senha está no código.
+- **Rollback:** veja [docs/ROLLBACK.md](docs/ROLLBACK.md).
+
 ## Sobre o modo de desenvolvimento
 
 Sem configurar as variáveis `DATABASE_URL` e `REDIS_URL`, a aplicação usa
@@ -186,5 +213,5 @@ rodam rápido e não exigem nenhum serviço externo rodando.
 ## Roadmap do projeto (A1 → A3)
 
 - [x] A1: Repositório estruturado, código com testes automatizados, pipeline de CI
-- [ ] A2: Dockerfile, docker-compose, pipeline de CD, gestão de segredos, versionamento/rollback
+- [x] A2: Dockerfile, docker-compose, pipeline de CD, gestão de segredos, versionamento/rollback
 - [ ] A3: Pipeline DevSecOps (SAST + scan de vulnerabilidades), observabilidade (Grafana), documentação técnica completa, live demo

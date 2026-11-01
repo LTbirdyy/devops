@@ -1,3 +1,7 @@
+from app.cache import set_cached_url
+
+
+
 def test_health_check(client):
     response = client.get("/health")
     assert response.status_code == 200
@@ -31,3 +35,28 @@ def test_redirect_with_invalid_code_returns_404(client):
 def test_shorten_url_rejects_invalid_url(client):
     response = client.post("/shorten", json={"url": "isso-nao-e-uma-url"})
     assert response.status_code == 422
+
+def test_shorten_url_rejects_missing_url(client):
+    response = client.post("/shorten", json={})
+    assert response.status_code == 422
+
+def test_shorten_url_rejects_empty_url(client):
+    response = client.post("/shorten", json={"url": ""})
+    assert response.status_code == 422
+
+def test_shorten_url_rejects_non_http_url(client):
+    response = client.post("/shorten", json={"url": "ftp://example.com"})
+    assert response.status_code == 422
+
+def test_shorten_url_rejects_non_http_schemes(client):
+    response = client.post("/shorten", json={"url": "javascript:alert(1)"})
+    assert response.status_code == 422
+
+def test_redirect_uses_cache_when_available(client):
+    
+    set_cached_url("cache123", "https://cached-target.com")
+
+    response = client.get("/cache123", follow_redirects=False)
+    assert response.status_code in (302, 307)
+    assert response.headers["location"] == "https://cached-target.com"
+
