@@ -197,14 +197,14 @@ rodam rápido e não exigem nenhum serviço externo rodando.
 flowchart LR
     A[Commit / Pull Request] --> B[CI: testes]
     A --> C[CI: build do Dockerfile]
-    A --> D[CI: compose + smoke test]
+    A --> D["CI: compose + smoke test"]
     B --> E{Merge na main}
     C --> E
     D --> E
     E --> F[Tag vX.Y.Z]
     F --> G[CD: build e push no GHCR]
     G --> H[Release no GitHub]
-    G --> I[Deploy em homologação + smoke test]
+    G --> I["Deploy em homologação + smoke test"]
     I -- falhou --> J[Rollback: reexecutar o cd com a versão anterior]
 ```
 
