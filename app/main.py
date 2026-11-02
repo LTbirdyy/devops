@@ -28,7 +28,7 @@ def serve_frontend():
 @app.get("/health")
 def health_check():
     """Endpoint simples para checar se a aplicação está de pé (usado pelo CI/monitoramento)."""
-    return {"status": "ok"}
+    raise HTTPException(status_code=500, detail="falha proposital para simular rollback")
 
 
 @app.post("/shorten", response_model=URLResponse)
@@ -61,7 +61,7 @@ def redirect_to_original(short_code: str, db: Session = Depends(get_db)):
 
     url_entry = db.query(URL).filter(URL.short_code == short_code).first()
     if not url_entry:
-        raise HTTPException(status_code=500, detail="falha proposital para simular rollback")
+        raise HTTPException(status_code=404, detail="Código não encontrado")
 
     url_entry.access_count += 1
     db.commit()
