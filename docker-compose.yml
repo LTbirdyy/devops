@@ -1,0 +1,50 @@
+# Sobe a aplicação junto com Postgres e Redis:
+#   docker compose up --build
+# Os valores sensíveis vêm do arquivo .env (copie o .env.example) ou de
+# variáveis de ambiente / secrets do pipeline. Nada de senha neste arquivo.
+
+services:
+  app:
+    build: .
+    # No deploy, APP_IMAGE aponta para a imagem versionada no registry
+    # (ex: ghcr.io/usuario/repo:1.0.0). Localmente usa a imagem buildada.
+    image: ${APP_IMAGE:-url-shortener:local}
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-shortener}:${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}@db:5432/${POSTGRES_DB:-shortener}
+      REDIS_URL: redis://redis:6379/0
+      TESTING: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-shortener}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      POSTGRES_DB: ${POSTGRES_DB:-shortener}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
