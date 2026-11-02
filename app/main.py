@@ -61,7 +61,7 @@ def redirect_to_original(short_code: str, db: Session = Depends(get_db)):
 
     url_entry = db.query(URL).filter(URL.short_code == short_code).first()
     if not url_entry:
-        raise HTTPException(status_code=404, detail="Código não encontrado")
+        raise HTTPException(status_code=500, detail="falha proposital para simular rollback")
 
     url_entry.access_count += 1
     db.commit()
